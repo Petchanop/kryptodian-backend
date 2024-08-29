@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -13,6 +13,14 @@ export class UserService {
     public userRepository: Repository<User>,
   ) { }
 
+  async verifyPassword(password: string, dbPassword: string): Promise<boolean> {
+    const isPasswordMatch = await bcrypt.compare(password, dbPassword);
+    if (!isPasswordMatch) {
+        throw new UnauthorizedException;
+    }
+    return isPasswordMatch;
+  }
+
   async checkUserAlreadyExists(createUserDto: CreateUserDto): Promise<boolean> {
     var user : User;
     try {
@@ -25,12 +33,9 @@ export class UserService {
     } catch (error) {
       ;
     }
-    console.log("users", user);
     if (user === undefined) {
-      console.log('undefined');
       return false;
     }
-    console.log("user already exists");
     return true;
   }
 

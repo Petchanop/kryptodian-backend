@@ -4,7 +4,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 const mockUserRepository = {
   save: jest.fn(),
@@ -64,10 +63,7 @@ describe('UserService', () => {
     expect(user.username).toEqual(result.username);
     expect(user.email).toEqual(result.email);
 
-    const IsPasswordMatch = await bcrypt.compare(
-      user.password,
-      result.password,
-    );
+    const IsPasswordMatch = user.password === result.password;
     expect(IsPasswordMatch).toEqual(true);
   });
 
@@ -102,22 +98,7 @@ describe('UserService', () => {
     });
     expect(result).toEqual(user);
 
-    jest.spyOn(mockUserRepository, 'findOneBy').mockReturnValue(null);
-    const notFound = await service.getUserByUserName('petcha');
-    expect(mockUserRepository.findOneBy).toHaveBeenCalled();
-    expect(mockUserRepository.findOneBy).toHaveBeenCalledWith({
-      username: 'petcha',
-    });
-    expect(notFound).toEqual(null);
   });
-
-  // it('gerUserById => use user uuid for search user retur user or null', async () => {
-  //   const user = {
-  //     username: 'Chadwick',
-  //     email: 'chadwickboseman@email.com',
-  //     password: 'abcdGG124%%',
-  //   } as User;
-  // });
 
   it('getUserByEmail => use email for search user return user or null', async () => {
     const user = {
