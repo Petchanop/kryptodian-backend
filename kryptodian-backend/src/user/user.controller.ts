@@ -53,7 +53,7 @@ export class UserController {
     return res;
   }
 
-  @Get(':username')
+  @Get('/username/:username')
   @ApiCreatedResponse({
     description: 'get user by user name',
     type: ResponseUserDto,
@@ -66,7 +66,7 @@ export class UserController {
     return res;
   }
 
-  @Get(':id')
+  @Get('/id/:id')
   @ApiCreatedResponse({
     description: 'get user by user id',
     type: ResponseUserDto,
@@ -92,6 +92,7 @@ export class UserController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+    const slugId = slugid.decode(id);
+    return this.userService.remove(slugId);
   }
 }

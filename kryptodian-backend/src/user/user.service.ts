@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ResponseUserDto } from './dto/response-user.dto';
+import passport from 'passport';
 
 @Injectable()
 export class UserService {
@@ -41,7 +42,7 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async getUserByEmail(email: string): Promise<ResponseUserDto> {
+  async getUserByEmail(email: string): Promise<ResponseUserDto>  | null{
     return this.userRepository.findOne({ where: { email } });
   }
 
@@ -50,7 +51,11 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<ResponseUserDto> {
     const user: User = await this.userRepository.findOne({ where: { id } });
-    console.log(updateUserDto);
+    try {
+      updateUserDto.password = await this.hashPassword(updateUserDto.password);
+    } catch (error) {
+      ;
+    }
     const updated = Object.assign(user, updateUserDto);
     return this.userRepository.save(updated);
   }
