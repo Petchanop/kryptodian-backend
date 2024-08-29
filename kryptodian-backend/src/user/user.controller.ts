@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -28,7 +30,7 @@ const createUserResponse = (user: ResponseUserDto) => {
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   @ApiCreatedResponse({
@@ -53,6 +55,18 @@ export class UserController {
     return res;
   }
 
+  @Get(':id')
+  @ApiCreatedResponse({
+    description: 'get user by user id',
+    type: ResponseUserDto,
+  })
+  async getUserById(@Param('id') id: string): Promise<ResponseUserDto> {
+    const slugId = slugid.decode(id);
+    const user = await this.userService.getUserById(slugId);
+    const res = createUserResponse(user);
+    return res;
+  }
+
   @Get('/username/:username')
   @ApiCreatedResponse({
     description: 'get user by user name',
@@ -62,18 +76,6 @@ export class UserController {
     @Param('username') username: string,
   ): Promise<ResponseUserDto> | null {
     const user = await this.userService.getUserByUserName(username);
-    const res = createUserResponse(user);
-    return res;
-  }
-
-  @Get('/id/:id')
-  @ApiCreatedResponse({
-    description: 'get user by user id',
-    type: ResponseUserDto,
-  })
-  async getUserById(@Param('id') id: string): Promise<ResponseUserDto> {
-    const slugId = slugid.decode(id);
-    const user = await this.userService.getUserById(slugId);
     const res = createUserResponse(user);
     return res;
   }

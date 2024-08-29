@@ -1,25 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ResponseUserDto } from './dto/response-user.dto';
-import passport from 'passport';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     public userRepository: Repository<User>,
-  ) {}
+  ) { }
+
+  async checkUserAlreadyExists(createUserDto: CreateUserDto): Promise<boolean> {
+    var user : User;
+    try {
+      if (createUserDto.username) {
+        user = await this.getUserByUserName(createUserDto.username);
+      }
+      if (!user && createUserDto.email) {
+        user = await this.getUserByEmail(createUserDto.email);
+      }
+    } catch (error) {
+      ;
+    }
+    console.log("users", user);
+    if (user === undefined) {
+      console.log('undefined');
+      return false;
+    }
+    console.log("user already exists");
+    return true;
+  }
 
   async hashPassword(password: string): Promise<string> {
     const hashPassword = await bcrypt.hash(password, await bcrypt.genSalt());
     return hashPassword;
   }
-  async create(createUserDto: CreateUserDto): Promise<ResponseUserDto> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    if (await this.checkUserAlreadyExists(createUserDto)) {
+      throw new HttpException('Username or Email already exists', HttpStatus.CONFLICT);
+    }
     const user: User = new User({
       username: createUserDto.username,
       email: createUserDto.email,
@@ -29,28 +51,39 @@ export class UserService {
     return res;
   }
 
-  async findAll(): Promise<ResponseUserDto[]> {
+  async findAll(): Promise<User[]> {
     const users = await this.userRepository.find();
     return users;
   }
 
-  async getUserByUserName(username: string): Promise<ResponseUserDto> | null {
-    return this.userRepository.findOneBy({ username });
+  async getUserByUserName(username: string): Promise<User> | null {
+    const user = await this.userRepository.findOneBy({ username });
+    if (!user)
+      throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
+    return user;
   }
 
-  async getUserById(id: string): Promise<ResponseUserDto> | null {
-    return this.userRepository.findOne({ where: { id } });
+  async getUserById(id: string): Promise<User> | null {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user)
+      throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
+    return user;
   }
 
-  async getUserByEmail(email: string): Promise<ResponseUserDto>  | null{
-    return this.userRepository.findOne({ where: { email } });
+  async getUserByEmail(email: string): Promise<User> | null {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user)
+      throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
+    return user;
   }
 
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
-  ): Promise<ResponseUserDto> {
+  ): Promise<User> {
     const user: User = await this.userRepository.findOne({ where: { id } });
+    if (!user)
+      throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
     try {
       updateUserDto.password = await this.hashPassword(updateUserDto.password);
     } catch (error) {
