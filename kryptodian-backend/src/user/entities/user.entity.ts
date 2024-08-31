@@ -2,10 +2,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Profile } from 'src/profile/entities/profile.entity';
+
+export enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user'
+}
 
 @Entity()
 export class User {
@@ -25,11 +32,21 @@ export class User {
   @Exclude()
   password: string;
 
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER
+  })
+  role: UserRole;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToOne((type) => Profile, (profile) => profile.user)
+  profile: Profile
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);

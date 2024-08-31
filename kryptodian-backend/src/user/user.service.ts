@@ -51,6 +51,7 @@ export class UserService {
       username: createUserDto.username,
       email: createUserDto.email,
       password: await this.hashPassword(createUserDto.password),
+      role: createUserDto.role,
     });
     const res = this.userRepository.save(user);
     return res;

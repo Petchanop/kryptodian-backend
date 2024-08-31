@@ -7,18 +7,19 @@ import {
   MinLength,
 } from 'class-validator';
 import { passwordRegEx } from './constants';
+import { UserRole } from '../entities/user.entity';
 
 export class CreateUserDto {
   @IsNotEmpty()
   @MinLength(3, { message: 'Username must have atleast 3 characters.' })
-  @IsAlphanumeric(null, {
+  @IsAlphanumeric(undefined, {
     message: 'Username does not allow other than alpha numeric chars.',
   })
   @ApiProperty()
   username: string;
 
   @IsNotEmpty()
-  @IsEmail(null, { message: 'Please provide valid Email.' })
+  @IsEmail(undefined, { message: 'Please provide valid Email.' })
   @ApiProperty()
   email: string;
 
@@ -30,6 +31,10 @@ export class CreateUserDto {
       one number and 
       one special character`,
   })
+
   @ApiProperty()
   password: string;
+
+  @ApiProperty()
+  role: UserRole;
 }

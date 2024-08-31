@@ -8,13 +8,18 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseUserDto } from './dto/response-user.dto';
 import * as slugid from 'slugid';
+import { Roles } from 'src/profile/decorators/public.decorator';
+import { UserRole } from './entities/user.entity';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 const createUserResponse = (user: ResponseUserDto) => {
   const res = {
@@ -37,16 +42,20 @@ export class UserController {
     description: 'create user',
     type: ResponseUserDto,
   })
+  @ApiBearerAuth('JWT')
   create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     const res = this.userService.create(createUserDto);
     return res;
   }
-
+  
   @Get()
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
   @ApiCreatedResponse({
     description: 'get all users',
     type: ResponseUserDto,
   })
+  @ApiBearerAuth('JWT')
   async findAll(): Promise<ResponseUserDto[]> {
     const users = this.userService.findAll();
     const res: ResponseUserDto[] = (await users).map((user) => {
@@ -56,10 +65,12 @@ export class UserController {
   }
 
   @Get(':id')
+  // @Roles(UserRole.ADMIN)
   @ApiCreatedResponse({
     description: 'get user by user id',
     type: ResponseUserDto,
   })
+  @ApiBearerAuth('JWT')
   async getUserById(@Param('id') id: string): Promise<ResponseUserDto> {
     const slugId = slugid.decode(id);
     const user = await this.userService.getUserById(slugId);
@@ -68,10 +79,12 @@ export class UserController {
   }
 
   @Get('/username/:username')
+  @Roles(UserRole.ADMIN)
   @ApiCreatedResponse({
     description: 'get user by user name',
     type: ResponseUserDto,
   })
+  @ApiBearerAuth('JWT')
   async getUserByUserName(
     @Param('username') username: string,
   ): Promise<ResponseUserDto> | null {
@@ -85,6 +98,7 @@ export class UserController {
     description: 'update user by user id',
     type: ResponseUserDto,
   })
+  @ApiBearerAuth('JWT')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const slugId = slugid.decode(id);
     const user = await this.userService.update(slugId, updateUserDto);
@@ -93,6 +107,8 @@ export class UserController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('JWT')
   remove(@Param('id') id: string) {
     const slugId = slugid.decode(id);
     return this.userService.remove(slugId);
