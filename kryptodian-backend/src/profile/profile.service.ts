@@ -30,6 +30,7 @@ export class ProfileService {
             relations: { user: true },
             where: { user: { id } }
         });
+        console.log("profile", profile);
         return profile;
     }
 

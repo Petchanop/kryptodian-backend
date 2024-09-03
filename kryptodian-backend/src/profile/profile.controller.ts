@@ -4,7 +4,6 @@ import { CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
 import { ProfileService } from './profile.service';
 import { Response } from 'express';
 import * as slugid from 'slugid';
-import { W } from 'typeorm';
 
 @ApiTags('profile')
 @Controller('profile')

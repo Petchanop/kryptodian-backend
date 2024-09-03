@@ -31,6 +31,7 @@ export class AuthController {
         type: AuthResponseDto,
     })
     async signIn(@Body() payload: SigninDto): Promise<AuthResponseDto> {
+        console.log("signin",payload);
         const res = await this.authService.signIn(payload);
         return res;
     }

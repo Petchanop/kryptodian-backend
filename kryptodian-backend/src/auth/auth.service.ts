@@ -29,10 +29,11 @@ export class AuthService {
         const generateAccessToken = {
             id: slugid.encode(user.id),
             username: user.username,
-            useremail: user.email,
+            email: user.email,
             role: user.role,
             timeout: process.env.EXPIRESIN,
         };
+        console.log("sigIn success")
         return {
             id: slugid.encode(user.id),
             username: user.username,

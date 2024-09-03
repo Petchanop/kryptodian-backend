@@ -12,6 +12,9 @@ export class ResponseUserDto {
   email: string;
 
   @ApiProperty()
+  role: string;
+
+  @ApiProperty()
   @Exclude()
   createdAt: Date;
 

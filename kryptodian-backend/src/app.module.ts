@@ -17,6 +17,7 @@ import { Portfolio } from './portfolio/entities/portfolio.entity';
 import { ProfileModule } from './profile/profile.module';
 import { Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { DataSource } from 'typeorm';
     PortfolioModule,
     AuthModule,
     ProfileModule,
+    HttpModule
   ],
   controllers: [AppController, PortfolioController, ProfileController],
   providers: [AppService, PortfolioService, ProfileService],

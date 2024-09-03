@@ -1,13 +1,15 @@
 import { Profile } from "src/profile/entities/profile.entity";
-import { CreateDateColumn, Entity, JoinTable, ManyToOne, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Portfolio {
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-    @PrimaryColumn()
+    @Column()
     network: string;
 
-    @PrimaryColumn()
+    @Column()
     wallet: string;
 
     @CreateDateColumn()
@@ -16,7 +18,10 @@ export class Portfolio {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => Portfolio, (portfolio) => portfolio.profile)
-    @JoinTable()
+    @ManyToOne(() => Profile, (profile) => profile.portfolio)
     profile: Profile;
+
+    constructor(partial: Partial<Portfolio>) {
+        Object.assign(this, partial);
+    }
 }

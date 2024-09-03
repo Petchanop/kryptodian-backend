@@ -1,16 +1,16 @@
 import { Portfolio } from "src/portfolio/entities/portfolio.entity";
 import { User } from "src/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Profile {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @PrimaryColumn()
+    @Column({ nullable: true })
     firstName: string;
 
-    @PrimaryColumn()
+    @Column({ nullable: true })
     lastName: string;
 
     @CreateDateColumn()
@@ -19,14 +19,14 @@ export class Profile {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToOne((type) => User, (user) => user.profile ,{
+    @OneToOne((type) => User, (user) => user.profile, {
         cascade: true
-      })
+    })
     @JoinColumn({ name: "userId", referencedColumnName: "id" })
     user: User
 
     // implement Portfolio later
-    @OneToMany(() => Profile, (profile) => profile.portfolio)
+    @OneToMany(() => Portfolio, (portfolio) => portfolio.profile)
     portfolio: Portfolio[];
 
     constructor(partial: Partial<Profile>) {
