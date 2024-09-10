@@ -3,14 +3,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Profile } from 'src/profile/entities/profile.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     public userRepository: Repository<User>,
+    private dataSource: DataSource,
   ) { }
 
   async verifyPassword(password: string, dbPassword: string): Promise<boolean> {
@@ -53,7 +55,9 @@ export class UserService {
       password: await this.hashPassword(createUserDto.password),
       role: createUserDto.role,
     });
-    const res = this.userRepository.save(user);
+    const profile = new Profile({user : user});
+    const res = this.dataSource.getRepository(User).save(user);
+    this.dataSource.getRepository(Profile).save(profile);
     return res;
   }
 

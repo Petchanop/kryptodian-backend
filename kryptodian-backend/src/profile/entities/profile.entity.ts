@@ -1,3 +1,4 @@
+import { CloudflarePhoto } from "src/photo/entity/photo.entity";
 import { Portfolio } from "src/portfolio/entities/portfolio.entity";
 import { User } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
@@ -19,13 +20,13 @@ export class Profile {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToOne((type) => User, (user) => user.profile, {
-        cascade: true
-    })
+    @OneToOne((type) => User, (user) => user.profile)
     @JoinColumn({ name: "userId", referencedColumnName: "id" })
     user: User
 
-    // implement Portfolio later
+    @OneToOne((type) => CloudflarePhoto, (photo) => photo.profile)
+    photo: CloudflarePhoto
+
     @OneToMany(() => Portfolio, (portfolio) => portfolio.profile)
     portfolio: Portfolio[];
 

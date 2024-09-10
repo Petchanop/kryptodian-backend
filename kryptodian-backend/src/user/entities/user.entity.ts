@@ -45,7 +45,9 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne((type) => Profile, (profile) => profile.user)
+  @OneToOne((type) => Profile, (profile) => profile.user, {
+    cascade: true
+  })
   profile: Profile
 
   constructor(partial: Partial<User>) {

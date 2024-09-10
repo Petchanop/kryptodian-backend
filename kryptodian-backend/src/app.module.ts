@@ -18,6 +18,8 @@ import { ProfileModule } from './profile/profile.module';
 import { Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { HttpModule } from '@nestjs/axios';
+import { PhotoModule } from './photo/photo.module';
+import { CloudflarePhoto } from './photo/entity/photo.entity';
 
 @Module({
   imports: [
@@ -31,8 +33,8 @@ import { HttpModule } from '@nestjs/axios';
       host: process.env.DATABASE_HOST,
       port: parseInt(process.env.DATABASE_PORT),
       username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      entities: [User, Profile, Portfolio],
+      password: `${process.env.DB_PASSWORD}`,
+      entities: [User, Profile, Portfolio, CloudflarePhoto],
       database: process.env.DB_NAME,
       synchronize: true,
       autoLoadEntities: true,
@@ -43,7 +45,8 @@ import { HttpModule } from '@nestjs/axios';
     PortfolioModule,
     AuthModule,
     ProfileModule,
-    HttpModule
+    HttpModule,
+    PhotoModule
   ],
   controllers: [AppController, PortfolioController, ProfileController],
   providers: [AppService, PortfolioService, ProfileService],

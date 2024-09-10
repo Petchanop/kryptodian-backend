@@ -28,3 +28,17 @@ export class UpdateProfileDto {
     @ApiProperty()
     lastName: string;
 }
+
+export class getProfileDto {
+    @ApiProperty()
+    id: string;
+
+    @ApiProperty()
+    firstName: string;
+
+    @IsAlpha(undefined, {
+        message: "Lastname must be Character Only."
+    })
+    @ApiProperty()
+    lastName: string;
+}

@@ -1,16 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsAlphanumeric, IsEmail, IsNotEmpty, Matches, MinLength } from "class-validator";
+import { IsEmail, IsEmpty, IsNotEmpty, Matches, MinLength, ValidateIf } from "class-validator";
 import { passwordRegEx } from "src/user/dto/constants";
-import internal from "stream";
 
 export class SigninDto {
-    // @MinLength(3, { message: 'Username must have atleast 3 characters.' })
-    // @IsAlphanumeric(null, {
-    //     message: 'Username does not allow other than alpha numeric chars.',
-    // })
     @ApiProperty()
     username: string;
 
+    @ValidateIf(o => !o.username)
     @IsEmail( undefined, { message: 'Please provide valid Email.' })
     @ApiProperty()
     email: string;

@@ -10,6 +10,7 @@ import {
   HttpStatus,
   HttpCode,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,10 +21,12 @@ import * as slugid from 'slugid';
 import { Roles } from 'src/profile/decorators/public.decorator';
 import { UserRole } from './entities/user.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { SlugIdPipe } from 'src/slugId.pipe';
+import { SlugIdInterceptor } from 'src/slugId.interceptor';
 
 const createUserResponse = (user: ResponseUserDto) => {
   const res = {
-    id: slugid.encode(user.id),
+    id: user.id,
     username: user.username,
     email: user.email,
     role: user.role,
@@ -56,6 +59,7 @@ export class UserController {
     description: 'get all users',
     type: ResponseUserDto,
   })
+  @UseInterceptors(SlugIdInterceptor)
   @ApiBearerAuth('JWT')
   async findAll(): Promise<ResponseUserDto[]> {
     const users = this.userService.findAll();
@@ -66,15 +70,14 @@ export class UserController {
   }
 
   @Get(':id')
-  // @Roles(UserRole.ADMIN)
   @ApiCreatedResponse({
     description: 'get user by user id',
     type: ResponseUserDto,
   })
+  @UseInterceptors(SlugIdInterceptor)
   @ApiBearerAuth('JWT')
-  async getUserById(@Param('id') id: string): Promise<ResponseUserDto> {
-    const slugId = slugid.decode(id);
-    const user = await this.userService.getUserById(slugId);
+  async getUserById(@Param('id', SlugIdPipe) id: string): Promise<ResponseUserDto> {
+    const user = await this.userService.getUserById(id);
     const res = createUserResponse(user);
     return res;
   }
@@ -85,6 +88,7 @@ export class UserController {
     description: 'get user by user name',
     type: ResponseUserDto,
   })
+  @UseInterceptors(SlugIdInterceptor)
   @ApiBearerAuth('JWT')
   async getUserByUserName(
     @Param('username') username: string,
@@ -99,10 +103,10 @@ export class UserController {
     description: 'update user by user id',
     type: ResponseUserDto,
   })
+  @UseInterceptors(SlugIdInterceptor)
   @ApiBearerAuth('JWT')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    const slugId = slugid.decode(id);
-    const user = await this.userService.update(slugId, updateUserDto);
+    const user = await this.userService.update(id, updateUserDto);
     const res = createUserResponse(user);
     return res;
   }
@@ -110,8 +114,7 @@ export class UserController {
   @Delete(':id')
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('JWT')
-  remove(@Param('id') id: string) {
-    const slugId = slugid.decode(id);
-    return this.userService.remove(slugId);
+  remove(@Param('id', SlugIdPipe) id: string) {
+    return this.userService.remove(id);
   }
 }

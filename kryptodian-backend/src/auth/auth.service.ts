@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Scope } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/entities/user.entity';
@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import * as slugid from 'slugid';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST})
 export class AuthService {
     constructor(private userService: UserService, private jwtService: JwtService) { }
 

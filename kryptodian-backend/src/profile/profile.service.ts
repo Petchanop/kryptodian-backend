@@ -2,9 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from './entities/profile.entity';
 import { DataSource, Repository } from 'typeorm';
-import { CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
+import { CreateProfileDto, getProfileDto, UpdateProfileDto } from './dto/profile.dto';
 import { User } from 'src/user/entities/user.entity';
-import { create } from 'domain';
+import * as slugid from 'slugid';
 
 @Injectable()
 export class ProfileService {
@@ -25,27 +25,31 @@ export class ProfileService {
         return res;
     }
 
-    async getProfile(id: string): Promise<CreateProfileDto> {
+    async getProfile(id: string): Promise<getProfileDto> {
         const profile = await this.profileRepository.findOne({
             relations: { user: true },
             where: { user: { id } }
         });
         console.log("profile", profile);
-        return profile;
+        return {
+            id: profile.id,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+        }
     }
 
     async updateProfile(
-        id: string,
-        updateProfile: UpdateProfileDto
-    ): Promise<UpdateProfileDto> {
-        const profile: Profile = await this.profileRepository.findOne({ where: { id } });
-        if (!profile)
+            id: string,
+            updateProfile: UpdateProfileDto
+        ): Promise < UpdateProfileDto > {
+            const profile: Profile = await this.profileRepository.findOne({ where: { id } });
+            if(!profile)
             throw new HttpException('Profile not Found', HttpStatus.NOT_FOUND);
-        const updated = Object.assign(profile, updateProfile);
-        return this.profileRepository.save(updated);
-    }
+            const updated = Object.assign(profile, updateProfile);
+            return this.profileRepository.save(updated);
+        }
 
-    async deleteProfile(id: string): Promise<{ affected?: number }> {
-        return this.profileRepository.delete(id);
+    async deleteProfile(id: string): Promise < { affected?: number } > {
+            return this.profileRepository.delete(id);
+        }
     }
-}

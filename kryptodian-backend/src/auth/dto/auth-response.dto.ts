@@ -1,7 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsAlphanumeric, IsEmail, MinLength } from "class-validator";
-import { BeforeInsert, BeforeUpdate } from "typeorm";
-import * as slugid from 'slugid';
 
 export class AuthResponseDto {
     @ApiProperty()

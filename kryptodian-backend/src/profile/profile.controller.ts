@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Req, Res, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
 import { ProfileService } from './profile.service';
 import { Response } from 'express';
 import * as slugid from 'slugid';
+import { SlugIdPipe } from 'src/slugId.pipe';
+import { SlugIdInterceptor } from 'src/slugId.interceptor';
 
 @ApiTags('profile')
 @Controller('profile')
@@ -17,8 +19,8 @@ export class ProfileController {
     })
     @ApiBearerAuth('JWT')
     async createProfile(@Req() req, @Body() createProfile: CreateProfileDto, @Res() res: Response): Promise<Response> {
-        const result = await this.profileService.createProfile(slugid.decode(req.user.id) , createProfile);
-        if (result){
+        const result = await this.profileService.createProfile(slugid.decode(req.user.id), createProfile);
+        if (result) {
             return res.status(HttpStatus.CREATED).send();
         }
         return res.status(HttpStatus.BAD_GATEWAY);
@@ -30,12 +32,13 @@ export class ProfileController {
         type: CreateProfileDto,
     })
     @ApiBearerAuth('JWT')
+    @UseInterceptors(SlugIdInterceptor)
     async getProfile(@Req() req): Promise<CreateProfileDto> {
         console.log(req.user);
         try {
             const res = await this.profileService.getProfile(slugid.decode(req.user.id));
             return res;
-        } catch (error){
+        } catch (error) {
             throw new HttpException('Profile not found', HttpStatus.NOT_FOUND);
         }
     }
@@ -46,9 +49,10 @@ export class ProfileController {
         type: Response,
     })
     @ApiBearerAuth('JWT')
-    async updateProfile(@Param('id') id: string, @Body() updateProfile: UpdateProfileDto, @Res() res: Response): Promise<Response> {
-        const result =  await this.profileService.updateProfile(id, updateProfile);
-        if (result){
+    @UseInterceptors(SlugIdInterceptor)
+    async updateProfile(@Param('id', SlugIdPipe) id: string, @Body() updateProfile: UpdateProfileDto, @Res() res: Response): Promise<Response> {
+        const result = await this.profileService.updateProfile(id, updateProfile);
+        if (result) {
             return res.status(HttpStatus.ACCEPTED).send();
         }
         return res.status(HttpStatus.BAD_GATEWAY);
@@ -60,10 +64,9 @@ export class ProfileController {
         type: Response,
     })
     @ApiBearerAuth('JWT')
-    async deleteProfile(@Param('id') id: string, @Res() res:Response): Promise<Response> {
-        const slugId = slugid.decode(id);
-        const result = await this.profileService.deleteProfile(slugId);
-        if (result){
+    async deleteProfile(@Param('id', SlugIdPipe) id: string, @Res() res: Response): Promise<Response> {
+        const result = await this.profileService.deleteProfile(id);
+        if (result) {
             return res.status(HttpStatus.ACCEPTED).send();
         }
         return res.status(HttpStatus.BAD_GATEWAY).send();

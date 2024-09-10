@@ -2,12 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/app.module';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as fs from 'fs';
-import { IdPipe } from './auth/id.pipe';
 
 async function bootstrap() {
   const app: INestApplication = await NestFactory.create(AppModule);
   app.enableVersioning();
+  app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Kryptodian')
     .setDescription('Krytodian test API description')

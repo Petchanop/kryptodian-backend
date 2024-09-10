@@ -29,7 +29,7 @@ export class PortfolioService {
 
     async createPortfolio(user: User, payload: createPortfolioDto): Promise<boolean> {
         console.log("create port", user, payload);
-        const profile = await this.dataSource.getRepository(Profile).findOne({ where: { user: { id: user.id } } });
+        const profile = await this.dataSource.getRepository(Profile).findOne({ where: { user: { id: slugid.decode(user.id) } } });
         const portfolio = new Portfolio({
             network: payload.network,
             wallet: payload.wallet,
@@ -47,14 +47,17 @@ export class PortfolioService {
     }
 
     async addPortfolio(user: User, payload: createPortfolioDto): Promise<boolean> {
-        const profile = await this.dataSource.getRepository(Profile).findOne({ where: { user: { id: user.id } } });
+        console.log("add port", user.id);
+        const profile = await this.dataSource.getRepository(Profile).findOne({ where: { user: { id: slugid.decode(user.id) } } });
+        if (!profile) {
+            throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+        }
         const portfolio = new Portfolio({
             network: payload.network,
             wallet: payload.wallet,
             profile: profile,
         })
         try {
-            await this.dataSource.manager.save(profile);
             await this.portfolioRepository.save(portfolio);
         } catch (error) {
             throw new HttpException('Can not add portfolio', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,12 +65,24 @@ export class PortfolioService {
         return true;
     }
 
-    async deletePortfolio(user: User, portfolioId: string): Promise<boolean> {
-        const profile = await this.dataSource.getRepository(Profile).findOne({ where: { user: { id: user.id } } });
+    async updatePortfolio(portfolioId: string, payload: createPortfolioDto) : Promise<boolean> {
+        const portfolio = await this.portfolioRepository.findOne({where: {id : portfolioId}});
+        if (!portfolio) {
+            throw new HttpException("Portfolio not found.", HttpStatus.NOT_FOUND);
+        }
+        for (let attribute in payload) {
+            if (portfolio[attribute]) {
+                portfolio[attribute] = payload[attribute];
+            }
+        }
+        this.portfolioRepository.save(portfolio)
+        return true;
+    }
+
+    async deletePortfolio(portfolioId: string): Promise<boolean> {
         const portfolio = await this.portfolioRepository.findOne({ where: { id: portfolioId } })
         try {
-            await this.dataSource.manager.save(profile.portfolio.filter((port) => port.id != portfolioId));
-            await this.portfolioRepository.delete(portfolio);
+            await this.portfolioRepository.remove(portfolio);
         } catch (error) {
             throw new HttpException('Can not delete portfolio', HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -96,17 +111,17 @@ export class PortfolioService {
         };
     }
 
-    async getWalletToken(payload: Portfolio): Promise<Observable<AxiosResponse<Ttoken[]>>> {
-        console.log("token", payload, `${process.env.MORALIS_API}/${payload.wallet}/erc20?chain=${payload.network}`);
+    async getWalletToken(portFolioId: string): Promise<Observable<AxiosResponse<Ttoken[]>>> {
+        const port = await this.portfolioRepository.findOne({ where: { id: portFolioId } });
+        console.log("token", port, `${process.env.MORALIS_API}${port.wallet}/erc20?chain=${port.network}`);
         // const data = this.httpService.get('https://deep-index.moralis.io/api/v2.2/0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326/erc20?chain=eth', {
-        const data = this.httpService.get(`${process.env.MORALIS_API}/${payload.wallet}/erc20?chain=${payload.network}`, {
+        const data = this.httpService.get(`${process.env.MORALIS_API}/${port.wallet}/erc20?chain=${port.network}`, {
             headers: {
                 "X-API-Key": `${process.env.MORALIS_API_KEY}`,
                 "accept": "application/json"
             }
         });
-        const res = data.pipe(map((axiosResponse: AxiosResponse) => {
-            console.log("axios", axiosResponse.data);
+        return data.pipe(map((axiosResponse: AxiosResponse) => {
             return axiosResponse.data.map((data) => {
                 return {
                     token: data.token_address,
@@ -117,7 +132,5 @@ export class PortfolioService {
                 }
             });
         }))
-        console.log(res)
-        return res;
     }
 }
