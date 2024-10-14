@@ -20,6 +20,8 @@ import { DataSource } from 'typeorm';
 import { HttpModule } from '@nestjs/axios';
 import { PhotoModule } from './photo/photo.module';
 import { CloudflarePhoto } from './photo/entity/photo.entity';
+import { CryptopriceGateway } from './cryptoprice/cryptoprice.gateway';
+import { CryptopriceModule } from './cryptoprice/cryptoprice.module';
 
 @Module({
   imports: [
@@ -46,10 +48,11 @@ import { CloudflarePhoto } from './photo/entity/photo.entity';
     AuthModule,
     ProfileModule,
     HttpModule,
-    PhotoModule
+    PhotoModule,
+    CryptopriceModule
   ],
   controllers: [AppController, PortfolioController, ProfileController],
-  providers: [AppService, PortfolioService, ProfileService],
+  providers: [AppService, PortfolioService, ProfileService, CryptopriceGateway],
 })
 export class AppModule { 
   constructor(private dataSource: DataSource) {}

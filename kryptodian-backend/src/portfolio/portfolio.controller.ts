@@ -86,7 +86,6 @@ export class PortfolioController {
         description: 'get token by Wallet address',
     })
     async getPortfolioDetails(@Param('id', SlugIdPipe) id: string): Promise<Observable<AxiosResponse<Ttoken[]>>> {
-        console.log("getToken", id);
         const response = await this.portfolioService.getWalletToken(id);
         return response;
     }

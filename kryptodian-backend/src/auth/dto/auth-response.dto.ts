@@ -17,6 +17,9 @@ export class AuthResponseDto {
     email: string;
 
     @ApiProperty()
+    role: string | null;
+
+    @ApiProperty()
     accessToken: string;
 
     @ApiProperty()

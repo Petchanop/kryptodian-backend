@@ -26,6 +26,7 @@ export class AuthService {
             throw new HttpException('Please fill in Username or Email.', HttpStatus.BAD_REQUEST);
         }
         await this.userService.verifyPassword(payload.password, user.password);
+        // this.userService.setLogin(user.id, true);
         const generateAccessToken = {
             id: slugid.encode(user.id),
             username: user.username,
@@ -38,6 +39,7 @@ export class AuthService {
             id: slugid.encode(user.id),
             username: user.username,
             email: user.email,
+            role: user.role,
             accessToken: await this.jwtService.signAsync(generateAccessToken, {
                 secret: `${process.env.SECRETKEY}`,
                 expiresIn: `${process.env.EXPIRESIN}`,
@@ -48,13 +50,14 @@ export class AuthService {
 
     async signOut(user: User): Promise<AuthResponseDto> {
         console.log(user.id);
+        // this.userService.setLogin(slugid.decode(user.id), false);
         return {
             id: user.id,
             username: user.username,
+            role: user.role,
             email: user.email,
             accessToken: "",
             timeout: "0",
         }
     }
-
 }

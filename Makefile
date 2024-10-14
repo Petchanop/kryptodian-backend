@@ -4,6 +4,7 @@ FRONT_CONTAINER=Kryptodian_frontend_container
 BACK_CONTAINER=Kryptodian_backend_container
 ENV=./.env
 DB_NAME=kryptodian_test
+DB_USER=petchanop
 DB_IMAGE=kryptodian_postgres
 DB_PASSWORD=kryptodian
 CHECK_FRONT_CONTAINER_EXIST=docker ps -a | grep ${FRONT_CONTAINER} &> /dev/null
@@ -21,12 +22,12 @@ run-db:
 db:
 	docker pull postgres
 	docker tag postgres:latest $(DB_IMAGE)
-	docker run --name $(DB_NAME) -p 5432:5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -e POSTGRES_DB=$(DB_NAME) -d $(DB_IMAGE)
+	docker run --name $(DB_NAME) -p 5432:5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -e POSTGRES_DB=$(DB_NAME) -e POSTGRES_USER=$(DB_USER) -d $(DB_IMAGE)
 
 re-db:
 	docker stop $(DB_NAME)
 	docker rm $(DB_NAME)
-	docker run --name $(DB_NAME) -p 5432:5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -e POSTGRES_DB=$(DB_NAME) -d $(DB_IMAGE)
+	docker run --name $(DB_NAME) -p 5432:5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -e POSTGRES_DB=$(DB_NAME) -e POSTGRES_USER=$(DB_USER) -d $(DB_IMAGE)
 
 build:
 	docker compose -f ./docker-compose.yml --env-file $(ENV) build --no-cache

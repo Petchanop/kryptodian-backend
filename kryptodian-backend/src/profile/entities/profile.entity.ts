@@ -20,14 +20,18 @@ export class Profile {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToOne((type) => User, (user) => user.profile)
+    @OneToOne((type) => User, (user) => user.profile, {
+        cascade : ["update", "insert"]
+    })
     @JoinColumn({ name: "userId", referencedColumnName: "id" })
     user: User
 
     @OneToOne((type) => CloudflarePhoto, (photo) => photo.profile)
     photo: CloudflarePhoto
 
-    @OneToMany(() => Portfolio, (portfolio) => portfolio.profile)
+    @OneToMany(() => Portfolio, (portfolio) => portfolio.profile, {
+        cascade : ["update", "insert"]
+    })
     portfolio: Portfolio[];
 
     constructor(partial: Partial<Profile>) {

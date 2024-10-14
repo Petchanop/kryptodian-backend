@@ -19,6 +19,7 @@ export class ProfileController {
     })
     @ApiBearerAuth('JWT')
     async createProfile(@Req() req, @Body() createProfile: CreateProfileDto, @Res() res: Response): Promise<Response> {
+        console.log("create Profile");
         const result = await this.profileService.createProfile(slugid.decode(req.user.id), createProfile);
         if (result) {
             return res.status(HttpStatus.CREATED).send();

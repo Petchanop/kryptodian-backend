@@ -6,11 +6,13 @@ import { ProfileService } from './profile.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Profile]),
-        JwtModule
+        JwtModule,
+        UserModule,
     ],
     controllers: [ProfileController],
     providers: [

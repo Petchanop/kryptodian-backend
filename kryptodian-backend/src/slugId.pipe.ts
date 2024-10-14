@@ -10,7 +10,6 @@ export interface ArgumentMetadata {
 @Injectable()
 export class SlugIdPipe implements PipeTransform {
   transform(value: string, metadata: ArgumentMetadata) {
-    console.log(metadata);
     return slugid.decode(value);
   }
 }

@@ -30,7 +30,6 @@ export class ProfileService {
             relations: { user: true },
             where: { user: { id } }
         });
-        console.log("profile", profile);
         return {
             id: profile.id,
             firstName: profile.firstName,
@@ -39,17 +38,20 @@ export class ProfileService {
     }
 
     async updateProfile(
-            id: string,
-            updateProfile: UpdateProfileDto
-        ): Promise < UpdateProfileDto > {
-            const profile: Profile = await this.profileRepository.findOne({ where: { id } });
-            if(!profile)
+        id: string,
+        updateProfile: UpdateProfileDto
+    ): Promise<UpdateProfileDto> {
+        const profile: Profile = await this.profileRepository.findOne({
+            where: { id }
+            });
+        if (!profile)
             throw new HttpException('Profile not Found', HttpStatus.NOT_FOUND);
-            const updated = Object.assign(profile, updateProfile);
-            return this.profileRepository.save(updated);
-        }
-
-    async deleteProfile(id: string): Promise < { affected?: number } > {
-            return this.profileRepository.delete(id);
-        }
+        const updated = Object.assign(profile, updateProfile);
+        console.log(updated);
+        return this.profileRepository.save(updated);
     }
+
+    async deleteProfile(id: string): Promise<{ affected?: number }> {
+        return this.profileRepository.delete(id);
+    }
+}

@@ -18,7 +18,9 @@ export class Portfolio {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => Profile, (profile) => profile.portfolio)
+    @ManyToOne(() => Profile, (profile) => profile.portfolio ,{
+        cascade : ["update", "insert"]
+    })
     profile: Profile;
 
     constructor(partial: Partial<Portfolio>) {

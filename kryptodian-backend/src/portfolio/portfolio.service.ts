@@ -28,27 +28,13 @@ export class PortfolioService {
     ) { }
 
     async createPortfolio(user: User, payload: createPortfolioDto): Promise<boolean> {
-        console.log("create port", user, payload);
-        const profile = await this.dataSource.getRepository(Profile).findOne({ where: { user: { id: slugid.decode(user.id) } } });
-        const portfolio = new Portfolio({
-            network: payload.network,
-            wallet: payload.wallet,
-            profile: profile,
-        })
-        console.log(profile, portfolio);
-        profile.portfolio = [portfolio];
-        try {
-            await this.dataSource.manager.save(profile);
-            await this.portfolioRepository.save(portfolio);
-        } catch (error) {
-
-        }
-        return true;
-    }
-
-    async addPortfolio(user: User, payload: createPortfolioDto): Promise<boolean> {
-        console.log("add port", user.id);
-        const profile = await this.dataSource.getRepository(Profile).findOne({ where: { user: { id: slugid.decode(user.id) } } });
+        const profile = await this.dataSource.getRepository(Profile).findOne({
+            relations: {
+                user: true
+            },
+            where: { user: { id: slugid.decode(user.id) } }
+        });
+        console.log("create port", user, profile, payload);
         if (!profile) {
             throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
         }
@@ -57,7 +43,46 @@ export class PortfolioService {
             wallet: payload.wallet,
             profile: profile,
         })
+        const getPort = await this.portfolioRepository.find({
+            relations: {
+                profile: true
+            },
+            where: {
+                profile: { id: profile.id }
+            }
+        })
+        const updateUserPortfolio = []
+        updateUserPortfolio.push(portfolio)
+        updateUserPortfolio.push(...getPort)
+        profile.portfolio = updateUserPortfolio;
+        console.log("create portfolio ", updateUserPortfolio)
         try {
+            await this.portfolioRepository.save(updateUserPortfolio);
+        } catch (error) {
+            throw new HttpException("Cannot create portfolio.", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+        return true;
+    }
+
+    async addPortfolio(user: User, payload: createPortfolioDto): Promise<boolean> {
+        console.log("add port", user.id);
+        const profile = await this.dataSource.getRepository(Profile).findOne({
+            relations: {
+                portfolio: true
+            },
+            where: { user: { id: slugid.decode(user.id) } }
+        });
+        if (!profile) {
+            throw new HttpException("User not found.", HttpStatus.NOT_FOUND);
+        }
+        const portfolio = this.portfolioRepository.create({
+            network: payload.network,
+            wallet: payload.wallet,
+            profile: profile
+        })
+        profile.portfolio.push(portfolio)
+        try {
+            await this.dataSource.getRepository(Profile).save(profile)
             await this.portfolioRepository.save(portfolio);
         } catch (error) {
             throw new HttpException('Can not add portfolio', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -65,8 +90,8 @@ export class PortfolioService {
         return true;
     }
 
-    async updatePortfolio(portfolioId: string, payload: createPortfolioDto) : Promise<boolean> {
-        const portfolio = await this.portfolioRepository.findOne({where: {id : portfolioId}});
+    async updatePortfolio(portfolioId: string, payload: createPortfolioDto): Promise<boolean> {
+        const portfolio = await this.portfolioRepository.findOne({ where: { id: portfolioId } });
         if (!portfolio) {
             throw new HttpException("Portfolio not found.", HttpStatus.NOT_FOUND);
         }
@@ -113,7 +138,7 @@ export class PortfolioService {
 
     async getWalletToken(portFolioId: string): Promise<Observable<AxiosResponse<Ttoken[]>>> {
         const port = await this.portfolioRepository.findOne({ where: { id: portFolioId } });
-        console.log("token", port, `${process.env.MORALIS_API}${port.wallet}/erc20?chain=${port.network}`);
+        console.log("portFolio", port, `${process.env.MORALIS_API}${port.wallet}/erc20?chain=${port.network}`);
         // const data = this.httpService.get('https://deep-index.moralis.io/api/v2.2/0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326/erc20?chain=eth', {
         const data = this.httpService.get(`${process.env.MORALIS_API}/${port.wallet}/erc20?chain=${port.network}`, {
             headers: {

@@ -11,6 +11,8 @@ import {
   HttpCode,
   UseGuards,
   UseInterceptors,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,6 +25,7 @@ import { UserRole } from './entities/user.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { SlugIdPipe } from 'src/slugId.pipe';
 import { SlugIdInterceptor } from 'src/slugId.interceptor';
+import { PaginationDto } from 'src/dto/pagination/pagination.dto';
 
 const createUserResponse = (user: ResponseUserDto) => {
   const res = {
@@ -61,8 +64,10 @@ export class UserController {
   })
   @UseInterceptors(SlugIdInterceptor)
   @ApiBearerAuth('JWT')
-  async findAll(): Promise<ResponseUserDto[]> {
-    const users = this.userService.findAll();
+  async findAll(@Query() query: PaginationDto): Promise<ResponseUserDto[]> {
+  // async findAll(@Req() req): Promise<ResponseUserDto[]> {
+    console.log("query", query)
+    const users = this.userService.findAll(query);
     const res: ResponseUserDto[] = (await users).map((user) => {
       return createUserResponse(user);
     });

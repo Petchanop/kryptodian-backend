@@ -7,12 +7,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from '../auth/auth.guard';
 import { HttpModule } from '@nestjs/axios';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Portfolio]),
         JwtModule,
-        HttpModule
+        HttpModule,
+        UserModule,
     ],  controllers: [PortfolioController],
     providers: [
         PortfolioService,

@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from 'src/profile/entities/profile.entity';
+import { PaginationDto } from 'src/dto/pagination/pagination.dto';
 
 @Injectable()
 export class UserService {
@@ -18,13 +19,13 @@ export class UserService {
   async verifyPassword(password: string, dbPassword: string): Promise<boolean> {
     const isPasswordMatch = await bcrypt.compare(password, dbPassword);
     if (!isPasswordMatch) {
-        throw new UnauthorizedException;
+      throw new UnauthorizedException;
     }
     return isPasswordMatch;
   }
 
   async checkUserAlreadyExists(createUserDto: CreateUserDto): Promise<boolean> {
-    var user : User;
+    var user: User;
     try {
       if (createUserDto.username) {
         user = await this.getUserByUserName(createUserDto.username);
@@ -55,14 +56,20 @@ export class UserService {
       password: await this.hashPassword(createUserDto.password),
       role: createUserDto.role,
     });
-    const profile = new Profile({user : user});
+    const profile = new Profile({ user: user });
     const res = this.dataSource.getRepository(User).save(user);
     this.dataSource.getRepository(Profile).save(profile);
     return res;
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await this.userRepository.find();
+  async findAll(query: PaginationDto): Promise<User[]> {
+    const { page, pageSize } = query
+    const skip = (page - 1) * pageSize
+    // const users = await this.userRepository.createQueryBuilder().skip(skip).take(pageSize).getMany();
+    const users = await this.userRepository.find({
+      take: pageSize,
+      skip: skip
+    });
     return users;
   }
 
@@ -102,6 +109,14 @@ export class UserService {
     const updated = Object.assign(user, updateUserDto);
     return this.userRepository.save(updated);
   }
+
+  // async setLogin(id: string, condition: boolean){
+  //   await this.dataSource
+  //   .createQueryBuilder()
+  //   .update<User>(User, { IsSignIn: condition })
+  //   .where("id = :id", { id: id})
+  //   .execute()
+  // }I
 
   async remove(id: string): Promise<{ affected?: number }> {
     return this.userRepository.delete(id);
