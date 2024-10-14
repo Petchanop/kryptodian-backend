@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "src/(.*)",
-      "dest": "/api",
+      "dest": "api/*",
       "methods": [
         "GET",
         "POST",
@@ -20,13 +20,6 @@
         "HEAD",
         "CONNECT",
         "TRACE"
-      ]
-    },
-    {
-      "src": "src/auth/(.*)",
-      "dest": "/api/auth/register",
-      "methods": [
-        "POST"
       ]
     }
   ]
