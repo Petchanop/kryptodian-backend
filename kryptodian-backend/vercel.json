@@ -2,14 +2,20 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/(.*)",
+      "src": "src/main.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/(.*)",
+      "dest": "src/main.ts",
+      "functions": {
+        "/**/*" : {
+          "memory": 3009,
+          "maxDuration": 30
+        }
+      },
       "methods": [
         "GET",
         "POST",
