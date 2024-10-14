@@ -1,6 +1,6 @@
-import { Portfolio } from "src/portfolio/entities/portfolio.entity";
-import { Profile } from "src/profile/entities/profile.entity";
-import { User } from "src/user/entities/user.entity";
+import { Portfolio } from "../portfolio/entities/portfolio.entity";
+import { Profile } from "../profile/entities/profile.entity";
+import { User } from "../user/entities/user.entity";
 import { DataSource } from "typeorm";
 
 export default () => ({

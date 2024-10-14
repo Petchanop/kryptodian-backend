@@ -4,8 +4,8 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { RolesGuard } from 'src/profile/roles.guard';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from '../profile/roles.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],

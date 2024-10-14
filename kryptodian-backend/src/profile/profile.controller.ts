@@ -4,8 +4,8 @@ import { CreateProfileDto, UpdateProfileDto } from './dto/profile.dto';
 import { ProfileService } from './profile.service';
 import { Response } from 'express';
 import * as slugid from 'slugid';
-import { SlugIdPipe } from 'src/slugId.pipe';
-import { SlugIdInterceptor } from 'src/slugId.interceptor';
+import { SlugIdPipe } from '../slugId.pipe';
+import { SlugIdInterceptor } from '../slugId.interceptor';
 
 @ApiTags('profile')
 @Controller('profile')

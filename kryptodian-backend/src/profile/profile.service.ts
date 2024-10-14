@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from './entities/profile.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateProfileDto, getProfileDto, UpdateProfileDto } from './dto/profile.dto';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import * as slugid from 'slugid';
 
 @Injectable()

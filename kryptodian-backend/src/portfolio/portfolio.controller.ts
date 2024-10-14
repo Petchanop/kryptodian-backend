@@ -6,7 +6,7 @@ import * as slugid from 'slugid';
 import { createPortfolioDto, portFolioDto } from './dto/portfolio.dto';
 import { Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { SlugIdPipe } from 'src/slugId.pipe';
+import { SlugIdPipe } from '../slugId.pipe';
 
 @ApiTags('Portfolio')
 @Controller('portfolio')

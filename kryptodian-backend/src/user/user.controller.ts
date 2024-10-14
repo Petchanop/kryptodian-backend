@@ -20,12 +20,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseUserDto } from './dto/response-user.dto';
 import * as slugid from 'slugid';
-import { Roles } from 'src/profile/decorators/public.decorator';
+import { Roles } from '../profile/decorators/public.decorator';
 import { UserRole } from './entities/user.entity';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { SlugIdPipe } from 'src/slugId.pipe';
-import { SlugIdInterceptor } from 'src/slugId.interceptor';
-import { PaginationDto } from 'src/dto/pagination/pagination.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { SlugIdPipe } from '../slugId.pipe';
+import { SlugIdInterceptor } from '../slugId.interceptor';
+import { PaginationDto } from '../dto/pagination/pagination.dto';
 
 const createUserResponse = (user: ResponseUserDto) => {
   const res = {

@@ -5,8 +5,8 @@ import { map, Observable } from 'rxjs';
 import { Portfolio } from './entities/portfolio.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { Profile } from 'src/profile/entities/profile.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Profile } from '../profile/entities/profile.entity';
+import { User } from '../user/entities/user.entity';
 import { createPortfolioDto, portFolioDto } from './dto/portfolio.dto';
 import * as slugid from 'slugid';
 

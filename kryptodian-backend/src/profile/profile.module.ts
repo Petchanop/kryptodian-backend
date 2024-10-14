@@ -5,8 +5,8 @@ import { Profile } from './entities/profile.entity';
 import { ProfileService } from './profile.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { UserModule } from 'src/user/user.module';
+import { AuthGuard } from '../auth/auth.guard';
+import { UserModule } from '../user/user.module';
 
 @Module({
     imports: [
