@@ -23,10 +23,5 @@
       ]
     }
   ],
-  "functions": {
-    "src/": {
-      "memory": 3009,
-      "maxDuration": 30
-    }
-  }
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
