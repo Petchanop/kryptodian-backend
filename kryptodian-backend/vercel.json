@@ -6,5 +6,28 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  "routes": [
+    {
+      "src": "src/(.*)",
+      "dest": "/api",
+      "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS",
+        "HEAD",
+        "CONNECT",
+        "TRACE"
+      ]
+    },
+    {
+      "src": "src/auth/(.*)",
+      "dest": "/api/auth/register",
+      "methods": [
+        "POST"
+      ]
+    }
+  ]
 }
