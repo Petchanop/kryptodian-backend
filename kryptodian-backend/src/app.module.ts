@@ -41,6 +41,12 @@ import { CryptopriceModule } from './cryptoprice/cryptoprice.module';
       synchronize: true,
       autoLoadEntities: true,
       logging: true,
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? {
+            ca: process.env.SSL_CERT,
+          }
+          : false,
     }),
     UserModule,
     JwtModule,
@@ -54,6 +60,6 @@ import { CryptopriceModule } from './cryptoprice/cryptoprice.module';
   controllers: [AppController, PortfolioController, ProfileController],
   providers: [AppService, PortfolioService, ProfileService, CryptopriceGateway],
 })
-export class AppModule { 
-  constructor(private dataSource: DataSource) {}
+export class AppModule {
+  constructor(private dataSource: DataSource) { }
 }
