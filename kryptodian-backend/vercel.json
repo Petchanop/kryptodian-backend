@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/main.ts",
+      "dest": "/api",
       "methods": [
         "GET",
         "POST",
@@ -22,6 +22,5 @@
         "TRACE"
       ]
     }
-  ],
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  ]
 }
