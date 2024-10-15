@@ -42,6 +42,8 @@ export default async function handler(req, res) {
       swaggerOptions: {
         persistAuthorization: true,
       },
+      jsonDocumentUrl: '/api/kryptodian_openapi.json',
+      yamlDocumentUrl: '/api/kryptodian_openapi.yaml',
     }); 
 
     // This is important
