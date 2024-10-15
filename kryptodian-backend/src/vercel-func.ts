@@ -24,11 +24,11 @@ export default async function handler(req, res) {
         'JWT',)
       .build();
   
-    const options: SwaggerDocumentOptions = {
-      operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
-    };
-    const document = SwaggerModule.createDocument(app, config, options);
-    SwaggerModule.setup('api', app, document); 
+    // const options: SwaggerDocumentOptions = {
+    //   operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+    // };
+    // const document = SwaggerModule.createDocument(app, config, options);
+    // SwaggerModule.setup('api', app, document); 
 
     // This is important
     await app.init();
