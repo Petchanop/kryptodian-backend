@@ -1,8 +1,7 @@
 // /vercel-func.js
-import { NestFactory, HttpAdapterHost } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
-
 import { AppModule } from './app.module';
 
 // Keep the app instance in memory for subsequent requests
@@ -24,17 +23,17 @@ export default async function handler(req, res) {
         'JWT',)
       .build();
   
-    // const options: SwaggerDocumentOptions = {
-    //   operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
-    // };
-    // const document = SwaggerModule.createDocument(app, config, options);
-    // SwaggerModule.setup('api', app, document); 
+    const options: SwaggerDocumentOptions = {
+      operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+    };
+    const document = SwaggerModule.createDocument(app, config, options);
+    SwaggerModule.setup('api', app, document); 
 
     // This is important
     await app.init();
   }
-  const adapterHost = app.get(HttpAdapterHost);
-  const httpAdapter = adapterHost.httpAdapter;
+  // const adapterHost = app.get(HttpAdapterHost);
+  const httpAdapter = app.getHttpAdapter(); 
   const instance = httpAdapter.getInstance();
 
   instance(req, res);
