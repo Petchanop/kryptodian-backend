@@ -1,9 +1,13 @@
 {
   "version": 2,
+  "build":   {
+    "src": "src/vercel-func.js",
+    "use": "@vercel/node"
+  },
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "vercel-func.ts",
+      "dest": "src/vercel-func.ts",
       "methods": [
         "GET",
         "POST",
