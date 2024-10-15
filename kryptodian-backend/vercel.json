@@ -1,7 +1,7 @@
 {
   "version": 2,
   "build":   {
-    "src": "src/vercel-func.js",
+    "src": "src/vercel-func.ts",
     "use": "@vercel/node"
   },
   "routes": [
