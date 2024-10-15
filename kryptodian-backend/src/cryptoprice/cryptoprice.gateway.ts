@@ -2,7 +2,7 @@ import { Body, OnModuleInit } from '@nestjs/common';
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
-@WebSocketGateway(8300,{ cors: true, transports:['websocket'] })
+@WebSocketGateway(11111,{ cors: true, transports:['websocket'] })
 export class CryptopriceGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
