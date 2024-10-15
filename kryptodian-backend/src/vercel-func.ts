@@ -3,7 +3,7 @@ import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 
-import { AppModule } from '../dist/app.module';
+import { AppModule } from './app.module';
 
 // Keep the app instance in memory for subsequent requests
 let app;
