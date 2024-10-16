@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 
-async function bootstrap() {
+export async function bootstrap(): Promise<INestApplication> {
   const app: INestApplication = await NestFactory.create(AppModule);
   app.enableVersioning();
   app.useGlobalPipes(new ValidationPipe());
@@ -39,6 +39,12 @@ async function bootstrap() {
     jsonDocumentUrl: '/api/kryptodian_openapi.json',
     yamlDocumentUrl: '/api/kryptodian_openapi.yaml',
   });
-  await app.listen(process.env.PORT ? parseInt(process.env.PORT) : 3000);
+  if (process.env.NODE_ENV !== 'production') {
+    await app.listen(process.env.PORT ? parseInt(process.env.PORT) : 3000);
+  }
+  return app;
 }
-bootstrap();
+
+if (process.env.NODE_ENV !== 'production') {
+  bootstrap();
+}
