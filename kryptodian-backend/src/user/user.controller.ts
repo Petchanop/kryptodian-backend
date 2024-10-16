@@ -17,7 +17,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ResponseUserDto } from './dto/response-user.dto';
 import * as slugid from 'slugid';
 import { Roles } from '../profile/decorators/public.decorator';
@@ -26,6 +26,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { SlugIdPipe } from '../slugId.pipe';
 import { SlugIdInterceptor } from '../slugId.interceptor';
 import { PaginationDto } from '../dto/pagination/pagination.dto';
+import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 const createUserResponse = (user: ResponseUserDto) => {
   const res = {
