@@ -57,15 +57,13 @@ export class UserService {
       role: createUserDto.role,
     });
     const profile = new Profile({ user: user });
-    const res = this.dataSource.getRepository(User).save(user);
     this.dataSource.getRepository(Profile).save(profile);
-    return res;
+    return user;
   }
 
   async findAll(query: PaginationDto): Promise<User[]> {
     const { page, pageSize } = query
     const skip = (page - 1) * pageSize
-    // const users = await this.userRepository.createQueryBuilder().skip(skip).take(pageSize).getMany();
     const users = await this.userRepository.find({
       take: pageSize,
       skip: skip
